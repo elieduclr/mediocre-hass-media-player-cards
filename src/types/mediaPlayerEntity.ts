@@ -54,6 +54,8 @@ export interface MediaPlayerEntityAttributes {
   device_class?: MediaPlayerDeviceClass;
   media_content_id?: string;
   media_content_type?: MediaContentType;
+  mass_player_type?: string;
+  active_child?: string;
 }
 
 export interface MediaPlayerEntity extends HassEntity {

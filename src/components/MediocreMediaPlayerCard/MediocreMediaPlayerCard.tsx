@@ -10,7 +10,7 @@ import {
   Search,
   SpeakerGrouping,
 } from "./components";
-import { AlbumArt, IconButton, usePlayer } from "@components";
+import { AlbumArt, IconButton, MaMenu, usePlayer } from "@components";
 import { VolumeSlider, VolumeTrigger } from "./components/VolumeSlider";
 import { Fragment } from "preact/jsx-runtime";
 import { useSupportedFeatures, useActionProps, useArtworkColors } from "@hooks";
@@ -80,6 +80,7 @@ export const MediocreMediaPlayerCard = () => {
     tap_opens_popup,
     use_art_colors,
     ma_entity_id,
+    ma_favorite_button_entity_id,
     search,
     options: {
       always_show_power_button: alwaysShowPowerButton,
@@ -187,16 +188,19 @@ export const MediocreMediaPlayerCard = () => {
                     )}
                   </Fragment>
                 )}
-                {config.ma_favorite_button_entity_id && (
-                  <IconButton
-                    size="x-small"
-                    onClick={() => {
-                      getHass().callService("button", "press", {
-                        entity_id: config.ma_favorite_button_entity_id,
-                      });
-                    }}
-                    icon={"mdi:heart-plus"}
-                    title="Mark current song as favorite"
+                {ma_entity_id && (
+                  <MaMenu
+                    ma_entity_id={ma_entity_id ?? undefined}
+                    ma_favorite_button_entity_id={
+                      ma_favorite_button_entity_id ?? undefined
+                    }
+                    renderTrigger={triggerProps => (
+                      <IconButton
+                        icon="mdi:bookshelf"
+                        size="x-small"
+                        {...triggerProps}
+                      />
+                    )}
                   />
                 )}
                 {hasSearch && (

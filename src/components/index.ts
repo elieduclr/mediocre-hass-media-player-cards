@@ -11,6 +11,7 @@ export * from "./HassContext";
 export * from "./Icon";
 export * from "./IconButton";
 export * from "./Input";
+export * from "./MaMenu";
 export * from "./MaSearch";
 export * from "./MediaSearch";
 export * from "./MediocreChipMediaPlayerGroupCard";

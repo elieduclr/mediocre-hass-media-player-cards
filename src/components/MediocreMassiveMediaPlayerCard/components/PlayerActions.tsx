@@ -1,6 +1,6 @@
 import { useCallback, useContext, useState } from "preact/hooks";
 import { css, keyframes } from "@emotion/react";
-import { HaSearch, IconButton, MaSearch, usePlayer } from "@components";
+import { HaSearch, IconButton, MaMenu, MaSearch, usePlayer } from "@components";
 import { CardContext, CardContextType } from "@components/CardContext";
 import { Fragment, ReactNode } from "preact/compat";
 import { VolumeController, VolumeTrigger } from "./VolumeController";
@@ -113,14 +113,6 @@ export const PlayerActions = () => {
     });
   }, [entity_id]);
 
-  const handleFavorite = useCallback(() => {
-    if (ma_favorite_button_entity_id) {
-      getHass().callService("button", "press", {
-        entity_id: ma_favorite_button_entity_id,
-      });
-    }
-  }, [ma_favorite_button_entity_id]);
-
   return (
     <div css={styles.root}>
       <Modal
@@ -186,16 +178,19 @@ export const PlayerActions = () => {
           </Modal>
         </Fragment>
       ) : null}
-
-      {ma_favorite_button_entity_id && (
-        <IconButton
-          size="small"
-          icon={"mdi:heart-plus"}
-          title="Mark current song as favorite"
-          onClick={handleFavorite}
+      {ma_entity_id && (
+        <MaMenu
+          ma_entity_id={ma_entity_id ?? undefined}
+          ma_favorite_button_entity_id={
+            ma_favorite_button_entity_id ?? undefined
+          }
+          side="top"
+          align="start"
+          renderTrigger={triggerProps => (
+            <IconButton icon="mdi:bookshelf" size="small" {...triggerProps} />
+          )}
         />
       )}
-
       {hasSearch && (
         <IconButton
           size="small"

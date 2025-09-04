@@ -1,4 +1,4 @@
-import { ButtonHTMLAttributes, JSX } from "preact/compat";
+import { ButtonHTMLAttributes, JSX, forwardRef } from "preact/compat";
 import { css } from "@emotion/react";
 import { Spinner } from "@components";
 import { theme } from "@constants";
@@ -12,7 +12,10 @@ export type ButtonSize =
   | "x-large"
   | "xx-large";
 
-export type IconButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+export type IconButtonProps = Omit<
+  ButtonHTMLAttributes<HTMLButtonElement>,
+  "ref"
+> & {
   icon: string;
   size?: ButtonSize;
   disabled?: boolean;
@@ -66,34 +69,40 @@ const styles = {
   }),
 };
 
-export const IconButton = ({
-  icon,
-  size = "medium",
-  disabled = false,
-  loading = false,
-  className,
-  renderLongPressIndicator,
-  ...buttonProps
-}: IconButtonProps) => {
-  return (
-    <button
-      disabled={disabled}
-      css={[
-        styles.root,
-        disabled && styles.rootDisabled,
-        size === "xx-small" && styles.rootXxsmall,
-      ]}
-      style={{
-        "--mmpc-icon-button-size": `${getButtonSize(size)}px`,
-      }}
-      className={className}
-      {...buttonProps}
-    >
-      {loading ? <Spinner size={size} /> : <ha-icon icon={icon} />}
-      {renderLongPressIndicator && renderLongPressIndicator()}
-    </button>
-  );
-};
+export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
+  (
+    {
+      icon,
+      size = "medium",
+      disabled = false,
+      loading = false,
+      className,
+      renderLongPressIndicator,
+      ...buttonProps
+    },
+    ref
+  ) => {
+    return (
+      <button
+        disabled={disabled}
+        css={[
+          styles.root,
+          disabled && styles.rootDisabled,
+          size === "xx-small" && styles.rootXxsmall,
+        ]}
+        style={{
+          "--mmpc-icon-button-size": `${getButtonSize(size)}px`,
+        }}
+        className={className}
+        {...buttonProps}
+        ref={ref}
+      >
+        {loading ? <Spinner size={size} /> : <ha-icon icon={icon} />}
+        {renderLongPressIndicator && renderLongPressIndicator()}
+      </button>
+    );
+  }
+);
 
 const getButtonSize = (size: ButtonSize) => {
   switch (size) {
