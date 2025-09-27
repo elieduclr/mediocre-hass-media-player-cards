@@ -73,7 +73,7 @@ export const MediaImage = ({
     <div css={styles.root} className={className}>
       {imageUrl && !error && (
         <img
-          src={getHass().hassUrl(imageUrl)}
+          src={getSafeHassUrl(imageUrl)}
           css={styles.image}
           alt=""
           onError={() => setError(true)}
