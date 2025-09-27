@@ -111,7 +111,7 @@ export const AlbumArt = ({
         {albumArt && state !== "off" && !error ? (
           <img
             css={styles.image}
-            src={getSafeHassUrl(albumArt)}
+            src={getHass().hassUrl(albumArt)}
             alt={
               !!title && !!artist
                 ? `${title} by ${artist}`

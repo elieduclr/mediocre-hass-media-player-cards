@@ -10,30 +10,6 @@ export type HomeAssistant = Omit<CCHHomeAssistant, "states"> & {
   };
 };
 
-/**
- * Retourne une URL sécurisée pour éviter le Mixed Content.
- * Si l'URL est HTTP, elle est réécrite pour passer via HA ingress.
- */
-export const getSafeHassUrl = (url: string): string => {
-  // Si déjà HTTPS → ok
-  if (url.startsWith("https://")) return url;
-
-  // Si l'URL est HTTP absolue → on tente de passer via ingress
-  if (url.startsWith("http://")) {
-    const ingressPath = window.location.pathname
-      .split("/")
-      .slice(0, 3)
-      .join("/"); // /api/hassio_ingress/<token>
-    return `${ingressPath}/imageproxy?path=${encodeURIComponent(url)}`;
-  }
-
-  // Fallback classique hassUrl
-  const hass = (window as any).hass as HomeAssistant | undefined;
-  if (hass?.hassUrl) return hass.hassUrl(url);
-
-  return url;
-};
-
 interface HaIconAttributes extends preact.JSX.HTMLAttributes<HTMLElement> {
   icon: string;
 }
@@ -114,6 +90,5 @@ declare module "preact" {
 declare global {
   interface Window {
     customCards: any[];
-    hass?: HomeAssistant;
   }
 }

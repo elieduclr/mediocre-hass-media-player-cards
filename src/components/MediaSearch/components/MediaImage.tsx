@@ -58,6 +58,31 @@ export type MediaImageProps = {
   className?: string;
 };
 
+/**
+ * Simple function to fix mixed content issues
+ */
+function getSecureImageUrl(imageUrl: string): string {
+  const isHttpsPage = window.location.protocol === 'https:';
+  const isHttpImage = imageUrl.startsWith('http://');
+  const currentUrl = window.location.href;
+  const ingressMatch = currentUrl.match(/\/api\/hassio_ingress\/([^\/]+)/);
+  
+  // If we're on HTTPS, image is HTTP, and we're in ingress environment
+  if (isHttpsPage && isHttpImage && ingressMatch && imageUrl.includes('/imageproxy')) {
+    try {
+      const url = new URL(imageUrl);
+      const pathAndQuery = url.pathname + url.search;
+      const ingressPath = `/api/hassio_ingress/${ingressMatch[1]}`;
+      return `${window.location.protocol}//${window.location.host}${ingressPath}${pathAndQuery}`;
+    } catch (error) {
+      console.warn('Failed to convert image URL for HTTPS:', error);
+      return imageUrl;
+    }
+  }
+  
+  return imageUrl;
+}
+
 export const MediaImage = ({
   imageUrl,
   loading,
@@ -69,17 +94,20 @@ export const MediaImage = ({
     setError(false);
   }, [imageUrl]);
 
+  // Process the image URL to handle mixed content
+  const processedImageUrl = imageUrl ? getSecureImageUrl(imageUrl) : imageUrl;
+
   return (
     <div css={styles.root} className={className}>
-      {imageUrl && !error && (
+      {processedImageUrl && !error && (
         <img
-          src={getSafeHassUrl(imageUrl)}
+          src={getHass().hassUrl(processedImageUrl)}
           css={styles.image}
           alt=""
           onError={() => setError(true)}
         />
       )}
-      {(!!error || !imageUrl) && (
+      {(!!error || !processedImageUrl) && (
         <Icon icon="mdi:image-broken-variant" size="small" />
       )}
       {loading && <Spinner css={styles.icon} size="x-small" />}
